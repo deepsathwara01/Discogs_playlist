@@ -4,13 +4,14 @@ const ListOffice = () => {
     
     const [tracks, setOffices] = useState([])
 
-    const deleteOffice = async (id)=>{
+    const deleteOffice = async (event)=>{
         try { 
-            const deleteOffice = await fetch(`http://localhost:8000/tracks/${id}`,{
+            const deleteOffice = await fetch(`http://localhost:8000/tracks/${event.target.id}`,{
                 method: "DELETE"
             })
             console.log(deleteOffice) 
-            setOffices(tracks.filter(track => track.id !== id))    
+            setOffices(tracks.filter(track => track.id !== event.target.id)) 
+            //console.log(tracks)   
         } catch (err) { 
             console.error(err.message)
         }
@@ -20,7 +21,7 @@ const ListOffice = () => {
         try {
             const response = await fetch("http://localhost:8000/tracks")
             const jsonData = await response.json()
-            setOffices(jsonData)
+            setOffices(jsonData.track)
             console.log(response)
         } catch (err) {
             console.error(err.message)
@@ -31,15 +32,31 @@ const ListOffice = () => {
     },[])
 
     console.log(tracks)
+    console.log("HI")
+    const renderThing =() => {
+        if(tracks.length > 0){
+        return (        
+        <div>
+            {
+        tracks.map((item) => (
+            <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>{item.title}</td>
+                <td>{item.uri}</td>
+                <td><button id={item.id} className="btn btn-danger" onClick={(event) => {deleteOffice(event)}}>Delete</button></td>
+            </tr>)
+        )}
+        </div>
+        )}
+        else {
+            return <div> </div>
+        }
+    }
  return <Fragment>
             {" "}
             <table className="table mt-5 text-center">
             <thead>
             <tr>
-                <th>id</th>
-                <th>Title</th>
-                <th>Uri</th>
-                <th>Delete</th>
             </tr>
             </thead>
             <tbody>
@@ -48,14 +65,8 @@ const ListOffice = () => {
                 <td>Doe</td>
                 <td>john@example.com</td>
             </tr> */}
-            {tracks.map(track => (
-                <tr key={track.id}>
-                    <td>{track.id}</td>
-                    <td>{track.title}</td>
-                    <td>{track.uri}</td>
-                    <td><button className="btn btn-danger" onClick={() => {deleteOffice(track.id)}}>Delete</button></td>
-                </tr>
-            ))}
+            
+            {renderThing()}
             </tbody>
         </table>
      </Fragment>
